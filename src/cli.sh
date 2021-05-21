@@ -5,6 +5,8 @@
 ## Globals that come from the entry points
 declare runner_src_dir
 
+declare runner_file_global_path="$HOME/.config/runner/runnerfile.sh"
+
 ## Runnerfile names that CLI will be looking for in current directory.
 declare -a runner_file_default_names=(
   'runnerfile.sh'
@@ -152,14 +154,28 @@ else
   done
 fi
 
-## Runnerfile not found
-if [[ -z ${runner_file} ]]; then
+## If the global runnerfile not exist and no
+## runnerfile found, exit with error
+if [[ ! -f ${runner_file_global_path} && -z ${runner_file} ]]; then
   runner_cli_error 'No runnerfile found.'
 fi
 
+if [[ -f ${runner_file_global_path} ]]; then
+  source "${runner_file_global_path}"
+fi
+
+if [[ ! -z ${runner_file} ]]; then
+  source "${runner_file}"
+fi
+
+## Runnerfile not found
+# if [[ -z ${runner_file} ]]; then
+#   runner_cli_error 'No runnerfile found.'
+# fi
+
 ## Source the runnerfile
 # shellcheck source=/dev/null
-source "${runner_file}"
+# source "${runner_file}"
 
 if [[ -n "${runner_list_tasks}" ]]; then
   runner_cli_list_tasks
